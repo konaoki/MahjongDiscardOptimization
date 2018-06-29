@@ -3,12 +3,32 @@ import java.lang.*;
 public class DiscardSelector{
   int[] mountain;
   int J=18;
-  static final int TOTAL_WINNING_HANDS=0;
-  static final int MAX_CHANGE=14;
-  int select(int[] hand, int[] discards) //hand and discard both size 34
+  static int TOTAL_WINNING_HANDS=0;
+  static int MAX_SWAP=8;
+  int[] hand;
+  int[][] winningHands;
+  int[] worths;
+
+  public DiscardSelector(int J, int max_swap, int[][] winningHands, int[] worths)
+  {
+    this.J=J;
+    MAX_SWAP=max_swap;
+    TOTAL_WINNING_HANDS=worths.length;
+    this.winningHands=winningHands;
+    this.worths=worths;
+  }
+  void update(int[] hand, int[] mountain, int[][] winningHands, int[] worths)
+  {
+    this.hand=hand;
+    this.mountain=mountain;
+    if(winningHands!=null)
+      this.winningHands=winningHands;
+    if(worths!=null)
+      this.worths=worths;
+  }
+  int select() //hand and discard both size 34
   {
     //initialization
-    int worth=0;
     int mult=0;
     double universe = combination(mountain.length,J);
     int[] counter;
@@ -22,12 +42,11 @@ public class DiscardSelector{
       double E=0;
       for(int w=0; w<TOTAL_WINNING_HANDS; w++)
       {
-        worth = 0; //use library here
-        targetTiles=new int[0]; //also maybe library here
-        counter = new int[MAX_CHANGE];
+        targetTiles=difference(winningHands[w],hand);
+        counter = new int[MAX_SWAP];
         mult=union(targetTiles, counter, 0, 0);
         double probability = (double)mult/universe;
-        E += worth*probability;
+        E += worths[w]*probability;
       }
       Es[d]=E;
     }
@@ -75,6 +94,25 @@ public class DiscardSelector{
   int mul(int tile)
   {
     return 0;
+  }
+  int[] difference(int[] a, int[] b) //assumes sorted and same size
+  {
+    if(a.length != b.length)
+    {
+      System.out.println("error in difference.");
+      System.exit(0);
+    }
+    int count=0;
+    LinkedList<Integer> al = new LinkedList<Integer>();
+    for(int i=0; i<a.length; i++)
+    {
+      while(a[i]>b[count] && count<a.length)
+      {
+        al.add(b[count]);
+        count++;
+      }
+    }
+    return null;
   }
 
 
