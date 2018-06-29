@@ -96,8 +96,8 @@ public class Mjlogreader{
     }else{
       junme++;
       discarded = getNextTile(false);
-      System.out.println("Junme: " + junme);
       System.out.println("Discard: " + discarded);
+      System.out.println("Junme: " + junme);
       hand[discarded]--;
       discardPile[discarded]++;
       tsumo = getNextTile(true);
@@ -138,7 +138,7 @@ public class Mjlogreader{
 
   public static void main(String[] args){
     Mjlogreader mr = new Mjlogreader("sample.mjlog");
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 20; i++){
       mr.printHandArray();
       mr.next();
     }
