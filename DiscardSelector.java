@@ -13,9 +13,12 @@ public class DiscardSelector{
   {
     this.J=J;
     MAX_SWAP=max_swap;
-    TOTAL_WINNING_HANDS=worths.length;
-    this.winningHands=winningHands;
-    this.worths=worths;
+    if(worths!=null)
+    {
+      TOTAL_WINNING_HANDS=worths.length;
+      this.worths=worths;
+      this.winningHands=winningHands;
+    }
   }
   void update(int[] hand, int[] mountain, int[][] winningHands, int[] worths)
   {
@@ -106,15 +109,12 @@ public class DiscardSelector{
     LinkedList<Integer> al = new LinkedList<Integer>();
     for(int i=0; i<a.length; i++)
     {
-      while(a[i]>b[count] && count<a.length)
+      while(count<b.length && a[i]>b[count])
       {
-        al.add(b[count]);
+        al.add(a[count]);
         count++;
       }
     }
     return null;
   }
-
-
-
 }
