@@ -1,4 +1,5 @@
 import java.io.*;
+import java.util.*;
 
 
 /** Hais array
@@ -86,6 +87,7 @@ public class Mjlogreader{
       System.out.println("End of Kyoku");
       System.out.println("--------");
       curr_game++;
+      newGame();
       if(startGame[curr_game] == 0){
         System.out.println("--------");
         System.out.println("--------");
@@ -102,6 +104,15 @@ public class Mjlogreader{
       System.out.println("Tsumo: " + tsumo);
       hand[tsumo]++;
     }
+  }
+
+  private void newGame(){
+    temp = data.substring(data.indexOf("hai2=", startGame[curr_game]) + 6, data.indexOf("hai3=", startGame[curr_game]) - 2).split(",");
+    Arrays.fill(hand, 0);
+    for(int i = 0; i < temp.length; i++){
+      hand[tileConverter(Integer.parseInt(temp[i]))]++;
+    }
+    junme = 0;
   }
 
   private void printHandArray(){
@@ -122,8 +133,6 @@ public class Mjlogreader{
     indicator = (isTsumo)? TSUMO : DAHAI;
     curr_ptr = data.indexOf(indicator, curr_ptr);
     int returnVal = tileConverter(Integer.parseInt(data.substring(data.indexOf(indicator, curr_ptr) + 2, data.indexOf(ENDSIGN, curr_ptr))));
-
-    curr_ptr = data.indexOf(indicator, curr_ptr + 1);
     return returnVal;
   }
 
