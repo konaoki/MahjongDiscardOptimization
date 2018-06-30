@@ -81,18 +81,17 @@ public class DiscardSelector{
     }
     return result;
   }
-  int combination(int n, int k)
+  double combination(int n, int k)
   {
     return fac(n)/(fac(k)*fac(n-k));
   }
-  int fac(int n)
+  double fac(int n)
   {
-    int result=1;
-    for(int i=1; i<=n; i++)
-    {
-      result*=i;
+    double factor = 1;
+    for (int i=1; i<=n; i++) {
+      factor = factor*i;
     }
-    return result;
+    return factor;
   }
   int mul(int tile)
   {
@@ -105,16 +104,42 @@ public class DiscardSelector{
       System.out.println("error in difference.");
       System.exit(0);
     }
-    int count=0;
-    LinkedList<Integer> al = new LinkedList<Integer>();
-    for(int i=0; i<a.length; i++)
+    int acount=0;
+    int bcount=0;
+    int[] sameindex = new int[a.length];
+    int samecount = 0;
+    Arrays.fill(sameindex, -1);
+    while(acount < a.length && bcount < b.length)
     {
-      while(count<b.length && a[i]>b[count])
+      if(a[acount]==b[bcount])
       {
-        al.add(a[count]);
-        count++;
+        sameindex[samecount] = acount;
+        acount++;
+        bcount++;
+        samecount++;
+      }
+      else if(a[acount]>b[bcount])
+      {
+        bcount++;
+      }
+      else if(a[acount]<b[bcount])
+      {
+        acount++;
       }
     }
-    return null;
+    int[] diff = new int[a.length-samecount];
+    int count=0;
+    int difcount=0;
+    for(int i=0; i<a.length; i++)
+    {
+      if(i!=sameindex[count])
+      {
+        diff[difcount] = a[i];
+        difcount++;
+      }
+      else
+        count++;
+    }
+    return diff;
   }
 }
