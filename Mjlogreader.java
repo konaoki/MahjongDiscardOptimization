@@ -17,7 +17,6 @@ public class Mjlogreader{
   final static int PLAYERID = 2;
   String data;
   BufferedReader br;
-  int index;
   final static String TSUMO = "<V";
   final static String DAHAI = "<F";
   final static String ENDSIGN = "/>";
@@ -74,7 +73,7 @@ public class Mjlogreader{
    * When junme == 0, it will only TSUMO
    * When junme > 0, it will discard and Tsumo.
    */
-  public void next(){
+  public boolean next(){
     int tsumo;
     if(junme == 0){
       junme++;
@@ -87,11 +86,17 @@ public class Mjlogreader{
       System.out.println("End of Kyoku");
       System.out.println("--------");
       curr_game++;
-      newGame();
       if(startGame[curr_game] == 0){
         System.out.println("--------");
         System.out.println("--------");
         System.out.println("END OF THE GAME");
+        return false;
+      }else{
+        System.out.println("Press enter to continue");
+        Scanner s = new Scanner(System.in);
+        if(s.nextLine() != null){
+          newGame();
+        }
       }
     }else{
       junme++;
@@ -104,6 +109,7 @@ public class Mjlogreader{
       System.out.println("Tsumo: " + tsumo);
       hand[tsumo]++;
     }
+    return true;
   }
 
   private void newGame(){
@@ -137,10 +143,10 @@ public class Mjlogreader{
   }
 
   public static void main(String[] args){
-    Mjlogreader mr = new Mjlogreader("sample.mjlog");
-    for(int i = 0; i < 20; i++){
+    Mjlogreader mr = new Mjlogreader("sample2.mjlog");
+    mr.printHandArray();
+    while(mr.next()){
       mr.printHandArray();
-      mr.next();
     }
   }
 
