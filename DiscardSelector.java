@@ -2,53 +2,52 @@ import java.util.*;
 import java.lang.*;
 public class DiscardSelector{
   int[] mountain;
+  int mountainSize;
   int J=18;
-  static int TOTAL_WINNING_HANDS=0;
-  static int MAX_SWAP=8;
-  int[] hand;
+  int TOTAL_WINNING_HANDS=0;
+  int MAX_SWAP=8;
+  int[] hand; //tile id 0-33
   int[][] winningHands;
   int[] worths;
 
-  public DiscardSelector(int J, int max_swap, int[][] winningHands, int[] worths)
+  public DiscardSelector(int J, int max_swap)
   {
     this.J=J;
     MAX_SWAP=max_swap;
-    if(worths!=null)
-    {
-      TOTAL_WINNING_HANDS=worths.length;
-      this.worths=worths;
-      this.winningHands=winningHands;
-    }
   }
-  void update(int[] hand, int[] mountain, int[][] winningHands, int[] worths)
+  void update(int[] hand, int[] mountain, int mountainSize, int[][] winningHands, int[] worths)
   {
     this.hand=hand;
     this.mountain=mountain;
+    this.mountainSize=mountainSize;
+    TOTAL_WINNING_HANDS=worths.length;
     if(winningHands!=null)
       this.winningHands=winningHands;
     if(worths!=null)
       this.worths=worths;
   }
-  int select() //hand and discard both size 34
+  int select()
   {
     //initialization
-    int mult=0;
-    double universe = combination(mountain.length,J);
-    int[] counter;
+    double mult=0;
+    double universe = combination(mountainSize,J);
     int[] targetTiles;
     double[] Es=new double[hand.length];
+    double probability;
 
     //for each potential discard
     for(int d=0; d<hand.length; d++)
     {
       //for each winningHand find E and find total
       double E=0;
+      mult=0;
       for(int w=0; w<TOTAL_WINNING_HANDS; w++)
       {
-        targetTiles=difference(winningHands[w],hand);
-        counter = new int[MAX_SWAP];
-        mult=union(targetTiles, counter, 0, 0);
-        double probability = (double)mult/universe;
+
+        targetTiles=difference(winningHands[w],difference(hand,new int[]{hand[d]}));
+        mult=union(targetTiles);
+        probability = 1-mult/universe;
+        System.out.println(probability);
         E += worths[w]*probability;
       }
       Es[d]=E;
@@ -57,64 +56,88 @@ public class DiscardSelector{
     int maxIndex=0;
     for(int e=0; e< Es.length; e++)
     {
+
       if(Es[e]>Es[maxIndex])
         maxIndex=e;
     }
     return hand[maxIndex];
   }
-  int union(int[] tiles, int[] counter, int level, int result) //level starts from zero, counter size=depth
+  //mult=0, level=0, result=0, dir=1
+  double res=0;
+  double union(int[] tiles) //level starts from zero
   {
-    int mult=0;
-    int tempMult=0;
-    for(int x=0; x<level; x++)
-    {
-      mult+=mul(tiles[counter[x]]);
-    }
-    int init=0;
-    if(level>0) init=counter[level-1]+1;
-    for (int i = init; i < counter.length; i++) {
-      counter[level]=i;
-      tempMult=mult;
-      tempMult+=mul(tiles[i]);
-      result+=Math.pow(-1, level%2) * combination(mountain.length-tempMult,J);
-      union(tiles, counter, level+1, result);
-    }
-    return result;
+    res=0;
+    unionHelper( tiles,  0,  0,  1);
+    return res;
   }
-  int combination(int n, int k)
+  void unionHelper(int[] tiles, int mult, int level, int dir)
+  {
+    int m=0;
+    if(level<MAX_SWAP)
+    {
+
+      for (int i = level; i < tiles.length; i++) {
+        m=mult+mul(tiles[i]);
+        res+=dir*combination(mountainSize-m,J); //O(N)
+        unionHelper(tiles, m, level+1, dir*-1);
+      }
+
+    }
+  }
+  double combination(int n, int k)
   {
     return fac(n)/(fac(k)*fac(n-k));
   }
-  int fac(int n)
+  double fac(int n)
   {
-    int result=1;
-    for(int i=1; i<=n; i++)
-    {
-      result*=i;
+    double factor = 1;
+    for (int i=1; i<=n; i++) {
+      factor = factor*i;
     }
-    return result;
+    return factor;
   }
   int mul(int tile)
   {
-    return 0;
+    return mountain[tile];
   }
-  int[] difference(int[] a, int[] b) //assumes sorted and same size
+  int[] difference(int[] a, int[] b) //assumes sorted. time is O(x) x=(|a|<|b|)?|a|:|b|
   {
-    if(a.length != b.length)
+    int acount=0;
+    int bcount=0;
+    int[] sameindex = new int[a.length];
+    int samecount = 0;
+    Arrays.fill(sameindex, -1);
+    while(acount < a.length && bcount < b.length)
     {
-      System.out.println("error in difference.");
-      System.exit(0);
-    }
-    int count=0;
-    LinkedList<Integer> al = new LinkedList<Integer>();
-    for(int i=0; i<a.length; i++)
-    {
-      while(count<b.length && a[i]>b[count])
+      if(a[acount]==b[bcount])
       {
-        al.add(a[count]);
-        count++;
+        sameindex[samecount] = acount;
+        acount++;
+        bcount++;
+        samecount++;
+      }
+      else if(a[acount]>b[bcount])
+      {
+        bcount++;
+      }
+      else if(a[acount]<b[bcount])
+      {
+        acount++;
       }
     }
-    return null;
+    int[] diff = new int[a.length-samecount];
+    int count=0;
+    int difcount=0;
+    for(int i=0; i<a.length; i++)
+    {
+      if(i!=sameindex[count])
+      {
+        diff[difcount] = a[i];
+        difcount++;
+      }
+      else
+        count++;
+    }
+    return diff;
   }
 }
