@@ -79,17 +79,17 @@ public class Mjlogreader{
       junme++;
       curr_ptr = startGame[curr_game];
       tsumo = getNextTile(true);
-      System.out.println("Tsumo: " + tsumo);
+      // System.out.println("Tsumo: " + tsumo);
       hand[tsumo]++;
     }else if(curr_ptr > startGame[curr_game + 1] || curr_ptr == -1){
-      System.out.println("--------");
-      System.out.println("End of Kyoku");
-      System.out.println("--------");
+      // System.out.println("--------");
+      // System.out.println("End of Kyoku");
+      // System.out.println("--------");
       curr_game++;
       if(startGame[curr_game] == 0){
-        System.out.println("--------");
-        System.out.println("--------");
-        System.out.println("END OF THE GAME");
+        // System.out.println("--------");
+        // System.out.println("--------");
+        // System.out.println("END OF THE GAME");
         return false;
       }else{
         System.out.println("Press enter to continue");
@@ -101,8 +101,8 @@ public class Mjlogreader{
     }else{
       junme++;
       discarded = getNextTile(false);
-      System.out.println("Discard: " + discarded);
-      System.out.println("Junme: " + junme);
+      // System.out.println("Discard: " + discarded);
+      // System.out.println("Junme: " + junme);
       hand[discarded]--;
       discardPile[discarded]++;
       tsumo = getNextTile(true);
@@ -144,10 +144,9 @@ public class Mjlogreader{
 
   public static void main(String[] args){
     Mjlogreader mr = new Mjlogreader("sample2.mjlog");
-    mr.printHandArray();
-    while(mr.next()){
-      mr.printHandArray();
-    }
+    do{
+      // mr.printHandArray();
+    }while(mr.next());
   }
 
 }
